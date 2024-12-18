@@ -1,0 +1,165 @@
+import 'dart:math';
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class CookingChallenge {
+  final String title;
+  final String description;
+  final String imageUrl;
+  final String recipe;
+
+  CookingChallenge({required this.title, required this.description, required this.imageUrl, required this.recipe});
+}
+
+final List<CookingChallenge> challenges = [
+  CookingChallenge(
+    title: 'Vegetable Salad',
+    description: 'Prepare a refreshing salad with tomatoes, cucumbers, and greens.',
+    imageUrl: 'https://simple-veganista.com/wp-content/uploads/2012/09/healthy-chopped-vegetable-salad-recipe-3.jpg',
+    recipe: '1. Chop the tomatoes and cucumbers.\n2. Add greens.\n3. Dress with oil and lemon juice.',
+  ),
+  CookingChallenge(
+    title: 'Chicken Skewers',
+    description: 'Make delicious chicken skewers on the grill.',
+    imageUrl: 'https://assets.bonappetit.com/photos/5cad1b0ce1f94543ecf93785/1:1/w_1280,c_limit/grilled-chicken-skewers-with-toum.jpg',
+    recipe: '1. Cut the chicken and marinate.\n2. Skewer onto sticks.\n3. Grill until cooked through.',
+  ),
+  CookingChallenge(
+    title: 'Mushroom Risotto',
+    description: 'Prepare creamy risotto with forest mushrooms.',
+    imageUrl: 'https://cdn77-s3.lazycatkitchen.com/wp-content/uploads/2019/11/vegan-mushroom-risotto-close-800x1200.jpg',
+    recipe: '1. Sauté mushrooms with onions.\n2. Add rice and fry for a few minutes.\n3. Gradually add broth and cook until done.',
+  ),
+  CookingChallenge(
+    title: 'Vegetable Curry',
+    description: 'Prepare aromatic vegetable curry with coconut milk.',
+    imageUrl: 'https://img.taste.com.au/EnXT90lV/w643-h428-cfill-q90/taste/2016/11/indian-style-vegetable-curry-59371-1.jpeg',
+    recipe: '1. Sauté vegetables.\n2. Add spices and coconut milk.\n3. Cook until done.',
+  ),
+  CookingChallenge(
+    title: 'Apple Pie',
+    description: 'Bake a sweet apple pie with cinnamon.',
+    imageUrl: 'https://th-thumbnailer.cdn-si-edu.com/ne1rstlITfrssTJmj71BzgAePTY=/1000x750/filters:no_upscale()/https://tf-cmsv2-smithsonianmag-media.s3.amazonaws.com/filer/8d/9d/8d9de6a5-72cb-42c3-bfcb-e5ba53357a7d/istock-584465076.jpg',
+    recipe: '1. Prepare the dough.\n2. Slice the apples and add cinnamon.\n3. Bake until golden brown.',
+  ),
+];
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Cooking Challenges',
+      theme: ThemeData(
+        primarySwatch: Colors.green,
+      ),
+      home: HomeScreen(),
+    );
+  }
+}
+
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  CookingChallenge? selectedChallenge; 
+
+  void _getRandomChallenge() {
+    final randomChallenge =
+        challenges[Random().nextInt(challenges.length)];
+    setState(() {
+      selectedChallenge = randomChallenge; 
+    });
+  }
+
+  void _navigateToChallengeScreen(BuildContext context) {
+    if (selectedChallenge != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ChallengeScreen(challenge: selectedChallenge!),
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("What's Cooking?")),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (selectedChallenge != null) 
+              Container(
+                padding: EdgeInsets.all(16.0),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.green),
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: GestureDetector(
+                  onTap: () => _navigateToChallengeScreen(context), 
+                  child: Text(
+                    selectedChallenge!.title,
+                    style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+            SizedBox(height: 20), 
+            ElevatedButton(
+              onPressed: _getRandomChallenge, 
+              child: Text("What to Cook?"),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ChallengeScreen extends StatelessWidget {
+  final CookingChallenge challenge;
+
+  ChallengeScreen({required this.challenge});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(challenge.title)),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Image.network(challenge.imageUrl),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                challenge.description,
+                style: TextStyle(fontSize: 18.0),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                'Step-by-step Recipe:',
+                style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                challenge.recipe,
+                style: TextStyle(fontSize: 18.0),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
